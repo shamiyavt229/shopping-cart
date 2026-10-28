@@ -20,10 +20,10 @@ export default function Header({ cartCount,
         </button>
         <nav className="header-nav" aria-label="Main navigation">
           <button className={page === "shop" ? "nav-link active" : "nav-link"} onClick={() => onNavigate("shop")}>
-            Shop
+            Home
           </button>
           <button className={page === "cart" ? "cart-nav active" : "cart-nav"} onClick={() => onNavigate("cart")}>
-            <span aria-hidden="true">Bag</span>
+            <span aria-hidden="true">Cart</span>
             <span className="cart-count">{cartCount}</span>
           </button>
           <button

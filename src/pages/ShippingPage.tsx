@@ -8,7 +8,7 @@ type Props = { items: CartItem[]; shippingDetails: ShippingDetails; onBack: () =
 
 export default function ShippingPage({ items, shippingDetails, onBack, onContinue }: Props) {
   return <section className="checkout-page">
-    <div className="checkout-topline"><button className="back-link" onClick={onBack}>← Back to bag</button><p className="eyebrow">YOUR ORDER, YOUR WAY</p></div>
+    <div className="checkout-topline"><button className="back-link" onClick={onBack}>← Back to Cart</button><p className="eyebrow">YOUR ORDER, YOUR WAY</p></div>
     <h1 className="checkout-title">Delivery details</h1>
     <CheckoutStepper activeStep={2} />
     <div className="checkout-two-column"><ShippingForm initialDetails={shippingDetails} onBack={onBack} onContinue={onContinue} /><div className="summary-column"><OrderSummary items={items} /></div></div>
