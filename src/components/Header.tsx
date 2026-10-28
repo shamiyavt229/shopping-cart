@@ -2,9 +2,15 @@ type HeaderProps = {
   cartCount: number;
   page: "shop" | "cart";
   onNavigate: (page: "shop" | "cart") => void;
+  isDarkMode: boolean;
+  onToggleTheme: () => void;
 };
 
-export default function Header({ cartCount, page, onNavigate }: HeaderProps) {
+export default function Header({ cartCount,
+  page,
+  onNavigate,
+  isDarkMode,
+  onToggleTheme, }: HeaderProps) {
   return (
     <header className="site-header">
       <div className="container header-inner">
@@ -20,6 +26,14 @@ export default function Header({ cartCount, page, onNavigate }: HeaderProps) {
             <span aria-hidden="true">Bag</span>
             <span className="cart-count">{cartCount}</span>
           </button>
+          <button
+  type="button"
+  className="nav-link theme-toggle"
+  onClick={onToggleTheme}
+  aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+>
+  {isDarkMode ? "☀ Light" : "☾ Dark"}
+</button>
         </nav>
       </div>
     </header>

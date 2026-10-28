@@ -1,27 +1,22 @@
-import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../hooks/useProducts";
 import { useCartStore } from "../store/cartStore";
 import { money } from "../utils/pricing";
 
-const MAX_QUANTITY = 5;
-
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
   const productId = Number(id);
   const { data: products = [], isPending, isError, error, refetch, isFetching } = useProducts();
   const items = useCartStore((state) => state.items);
   const addToCart = useCartStore((state) => state.addToCart);
+  const startBuyNow = useCartStore((state) => state.startBuyNow);
+  const setCheckoutMode = useCartStore((state) => state.setCheckoutMode);
 
   const product = Number.isFinite(productId)
     ? products.find((item) => item.id === productId)
     : undefined;
   const quantityInCart = items.find((item) => item.product.id === productId)?.quantity ?? 0;
-  const remainingCapacity = MAX_QUANTITY - quantityInCart;
-  const canAdd = remainingCapacity > 0;
-  const addAmount = Math.min(quantity, remainingCapacity);
 
   return (
     <section className="product-details-page">
@@ -74,58 +69,32 @@ export default function ProductDetailsPage() {
             <p className="product-details-description">{product.description}</p>
             {quantityInCart > 0 && (
               <p className="product-details-cart-note">
-                {quantityInCart} in bag · up to {MAX_QUANTITY} per item
+                {quantityInCart} in bag
               </p>
             )}
             <div className="product-details-actions">
-              <div className="quantity-control">
-                <button
-                  type="button"
-                  onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                  disabled={quantity <= 1}
-                  aria-label="Decrease quantity"
-                >
-                  −
-                </button>
-                <span aria-live="polite">{quantity}</span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity((current) => Math.min(MAX_QUANTITY, current + 1))}
-                  disabled={quantity >= MAX_QUANTITY}
-                  aria-label="Increase quantity"
-                >
-                  +
-                </button>
-              </div>
-
               <button
                 className="primary-button"
                 type="button"
                 onClick={() => {
-                  addToCart(product, addAmount);
-                  setQuantity(1);
+                  if (quantityInCart > 0) {
+                    setCheckoutMode("cart");
+                    navigate("/cart");
+                  } else {
+                    addToCart(product);
+                  }
                 }}
-                disabled={!canAdd}
               >
-                {!canAdd
-                  ? "Max added"
-                  : quantityInCart > 0
-                    ? `Add ${addAmount} to bag +`
-                    : addAmount > 1
-                      ? `Add ${addAmount} to bag +`
-                      : "Add to bag +"}
+                {quantityInCart > 0 ? "Go to Cart" : "Add to Cart"}
               </button>
 
               <button
                 className="primary-button"
                 type="button"
                 onClick={() => {
-                  if (canAdd) {
-                    addToCart(product, addAmount);
-                  }
-                  navigate("/checkout/shipping");
+                  startBuyNow(product);
+                  navigate("/checkout/buy-now");
                 }}
-                disabled={!canAdd && quantityInCart === 0}
               >
                 Buy Now
               </button>

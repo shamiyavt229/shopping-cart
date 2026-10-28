@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Header from "./components/Header";
@@ -21,20 +21,43 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const items = useCartStore((state) => state.items);
+  const buyNowItem = useCartStore((state) => state.buyNowItem);
+  const checkoutMode = useCartStore((state) => state.checkoutMode);
+  const setCheckoutMode = useCartStore((state) => state.setCheckoutMode);
   const clearCart = useCartStore((state) => state.clearCart);
+  const clearBuyNow = useCartStore((state) => state.clearBuyNow);
+  const removeFromCart = useCartStore((state) => state.removeFromCart);
+  const setQuantity = useCartStore((state) => state.setQuantity);
+  const setBuyNowQuantity = useCartStore((state) => state.setBuyNowQuantity);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+  return localStorage.getItem("theme") === "dark";
+});
+
+useEffect(() => {
+  document.documentElement.dataset.theme = isDarkMode ? "dark" : "light";
+  localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+}, [isDarkMode]);
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
-  const totals = calculateTotals(items);
+  const checkoutItems = checkoutMode === "buyNow"
+    ? buyNowItem ? [buyNowItem] : []
+    : items;
+  const totals = calculateTotals(checkoutItems);
   const [shippingDetails, setShippingDetails] = useState<ShippingDetails>(emptyShippingDetails);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const currentPage = location.pathname === "/cart" || location.pathname.startsWith("/checkout") ? "cart" : "shop";
 
   function goToCart() {
-    navigate("/cart");
+    navigate(checkoutMode === "buyNow" ? "/checkout/buy-now" : "/cart");
   }
 
   function placeOrder() {
     setOrderPlaced(true);
-    clearCart();
+    if (checkoutMode === "buyNow") {
+      clearBuyNow();
+    } else {
+      clearCart();
+    }
+    setCheckoutMode("cart");
     navigate("/success", { replace: true });
   }
 
@@ -47,17 +70,50 @@ export default function App() {
   return (
     <div className="app-shell">
       <div className="announcement-bar">A little something for your everyday <span>✳</span> Thoughtfully chosen for your everyday</div>
-      <Header cartCount={cartCount} page={currentPage} onNavigate={(page) => { setOrderPlaced(false); navigate(page === "shop" ? "/" : "/cart"); }} />
+      <Header
+  cartCount={cartCount}
+  page={currentPage}
+  onNavigate={(page) => {
+    setOrderPlaced(false);
+    navigate(page === "shop" ? "/" : "/cart");
+  }}
+  isDarkMode={isDarkMode}
+  onToggleTheme={() => setIsDarkMode((current) => !current)}
+/>
       <main className="container page-content">
         <Routes>
           <Route path="/" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailsPage />} />
-          <Route path="/cart" element={<CartPage onBackToShop={() => navigate("/")} onCheckout={() => navigate("/checkout/shipping")} />} />
+          <Route path="/cart" element={
+            <CartPage
+              checkoutMode="cart"
+              items={items}
+              onBackToShop={() => navigate("/")}
+              onCheckout={() => { setCheckoutMode("cart"); navigate("/checkout/shipping"); }}
+              onSetQuantity={setQuantity}
+              onRemove={removeFromCart}
+              onClear={clearCart}
+            />
+          } />
+          <Route path="/checkout/buy-now" element={
+            <CheckoutGuard allowed={checkoutMode === "buyNow" && buyNowItem !== null}>
+              <CartPage
+                checkoutMode="buyNow"
+                items={buyNowItem ? [buyNowItem] : []}
+                onBackToShop={() => navigate("/")}
+                onCheckout={() => navigate("/checkout/shipping")}
+                onSetQuantity={(_productId, quantity) => setBuyNowQuantity(quantity)}
+                onRemove={() => clearBuyNow()}
+                onClear={clearBuyNow}
+              />
+            </CheckoutGuard>
+          } />
           <Route
             path="/checkout/shipping"
             element={
-              <CheckoutGuard allowed={items.length > 0 && totals.checkoutAllowed}>
+              <CheckoutGuard allowed={checkoutItems.length > 0 && totals.checkoutAllowed}>
                 <ShippingPage
+                  items={checkoutItems}
                   shippingDetails={shippingDetails}
                   onBack={goToCart}
                   onContinue={(details) => {
@@ -71,8 +127,8 @@ export default function App() {
           <Route
             path="/checkout/payment"
             element={
-              <CheckoutGuard allowed={items.length > 0 && totals.checkoutAllowed && ShippingDetailsAreValid(shippingDetails)}>
-                <PaymentPage shippingDetails={shippingDetails} onEditShipping={() => navigate("/checkout/shipping")} onPlaceOrder={placeOrder} />
+              <CheckoutGuard allowed={checkoutItems.length > 0 && totals.checkoutAllowed && ShippingDetailsAreValid(shippingDetails)}>
+                <PaymentPage items={checkoutItems} shippingDetails={shippingDetails} onEditShipping={() => navigate("/checkout/shipping")} onPlaceOrder={placeOrder} />
               </CheckoutGuard>
             }
           />

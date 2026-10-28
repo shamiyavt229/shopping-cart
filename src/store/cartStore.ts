@@ -10,12 +10,20 @@ export type CartItem = {
   quantity: number;
 };
 
+export type CheckoutMode = "cart" | "buyNow";
+
 type CartState = {
   items: CartItem[];
+  buyNowItem: CartItem | null;
+  checkoutMode: CheckoutMode;
   addToCart: (product: Product, quantity?: number) => void;
   removeFromCart: (productId: number) => void;
   setQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
+  startBuyNow: (product: Product) => void;
+  setBuyNowQuantity: (quantity: number) => void;
+  clearBuyNow: () => void;
+  setCheckoutMode: (mode: CheckoutMode) => void;
 };
 
 export function getQuantityInCart(items: CartItem[], productId: number) {
@@ -30,6 +38,8 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       items: [],
+      buyNowItem: null,
+      checkoutMode: "cart",
       addToCart: (product, quantity = 1) =>
         set((state) => {
           const remaining = getRemainingCapacity(state.items, product.id);
@@ -63,6 +73,19 @@ export const useCartStore = create<CartState>()(
           ),
         })),
       clearCart: () => set({ items: [] }),
+      startBuyNow: (product) =>
+        set({ buyNowItem: { product, quantity: 1 }, checkoutMode: "buyNow" }),
+      setBuyNowQuantity: (quantity) =>
+        set((state) => state.buyNowItem
+          ? {
+              buyNowItem: {
+                ...state.buyNowItem,
+                quantity: Math.max(1, Math.min(MAX_QUANTITY, quantity)),
+              },
+            }
+          : state),
+      clearBuyNow: () => set({ buyNowItem: null }),
+      setCheckoutMode: (checkoutMode) => set({ checkoutMode }),
     }),
     { name: "everyday-shopping-cart" },
   ),

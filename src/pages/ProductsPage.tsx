@@ -3,15 +3,18 @@ import { useProductFilters } from "../hooks/useProductFilters";
 import { useProducts } from "../hooks/useProducts";
 import { useCartStore } from "../store/cartStore";
 import ProductCard from "../components/ProductCard";
+import ProductSkeleton from "../components/productskeleton";
 
 export default function ProductsPage() {
   const { data: products = [], isPending, isError, error, refetch, isFetching } = useProducts();
   const items = useCartStore((state) => state.items);
   const addToCart = useCartStore((state) => state.addToCart);
-  const { search, setSearch, category, setCategory, maxPrice, setMaxPrice, categories, filteredProducts, clearFilters } = useProductFilters(products);
+  const { search, setSearch, category, setCategory, maxPrice, setMaxPrice,sortBy,
+  setSortBy, categories, filteredProducts, clearFilters } = useProductFilters(products);
   const [categorySearch, setCategorySearch] = useState("");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const categoryComboboxRef = useRef<HTMLDivElement>(null);
+  
 
   const matchingCategories = categories.filter((item) =>
     item.replaceAll("-", " ").toLowerCase().includes(categorySearch.trim().toLowerCase()),
@@ -128,6 +131,18 @@ export default function ProductsPage() {
                 </div>
               )}
             </div>
+            <select
+  aria-label="Sort products"
+  className="form-select filter-select"
+  value={sortBy}
+  onChange={(event) => setSortBy(event.target.value)}
+>
+  <option value="default">Sort by: Default</option>
+  <option value="price-low">Price: Low to High</option>
+  <option value="price-high">Price: High to Low</option>
+  <option value="name">Name: A to Z</option>
+  <option value="rating">Rating: Highest First</option>
+</select>
 
             <input
               aria-label="Filter by maximum price"
@@ -144,7 +159,23 @@ export default function ProductsPage() {
           </div>
         )}
 
-        {isPending && <div className="state-panel" role="status"><div className="spinner-border" aria-hidden="true" /><h3>Finding the good stuff</h3><p>Loading products from the store…</p></div>}
+        {isPending && (
+  <div
+    className="row g-4 product-grid"
+    role="status"
+    aria-label="Loading products"
+  >
+    {Array.from({ length: 8 }).map((_, index) => (
+      <div
+        className="col-6 col-md-4 col-xl-3"
+        key={index}
+      >
+        <ProductSkeleton />
+      </div>
+    ))}
+    <span className="visually-hidden">Loading products...</span>
+  </div>
+)}
         {isError && <div className="state-panel error-panel" role="alert"><div className="state-symbol">!</div><h3>We couldn't load the products.</h3><p>{error instanceof Error ? error.message : "Please check your internet connection and try again."}</p><button className="primary-button" onClick={() => void refetch()} disabled={isFetching}>{isFetching ? "Trying again…" : "Try again"}</button></div>}
         {!isPending && !isError && products.length === 0 && <div className="state-panel"><div className="state-symbol">□</div><h3>No products are available.</h3><p>The product service returned an empty collection. Please try again shortly.</p><button className="secondary-button" onClick={() => void refetch()} disabled={isFetching}>Refresh products</button></div>}
         {!isPending && !isError && products.length > 0 && filteredProducts.length === 0 && <div className="state-panel"><div className="state-symbol">⌕</div><h3>No matching products.</h3><p>Try a different title, category, or price range.</p><button className="secondary-button" onClick={handleClearFilters}>Clear filters</button></div>}

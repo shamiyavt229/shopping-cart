@@ -1,13 +1,12 @@
 import OrderSummary from "../components/OrderSummary";
 import CheckoutStepper from "../components/CheckoutStepper";
-import { useCartStore } from "../store/cartStore";
+import type { CartItem } from "../store/cartStore";
 import { money } from "../utils/pricing";
 import type { ShippingDetails } from "../utils/shippingSchema";
 
-type Props = { shippingDetails: ShippingDetails; onEditShipping: () => void; onPlaceOrder: () => void };
+type Props = { items: CartItem[]; shippingDetails: ShippingDetails; onEditShipping: () => void; onPlaceOrder: () => void };
 
-export default function PaymentPage({ shippingDetails, onEditShipping, onPlaceOrder }: Props) {
-  const items = useCartStore((state) => state.items);
+export default function PaymentPage({ items, shippingDetails, onEditShipping, onPlaceOrder }: Props) {
   return <section className="checkout-page">
     <div className="checkout-topline"><button className="back-link" onClick={onEditShipping}>← Edit shipping</button><p className="eyebrow">YOUR ORDER, YOUR WAY</p></div>
     <h1 className="checkout-title">Almost yours.</h1><CheckoutStepper activeStep={3} />
