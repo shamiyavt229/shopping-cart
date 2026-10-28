@@ -1,115 +1,134 @@
 # Everyday — Shopping Cart Application
 
-## Project overview
+Everyday is a responsive shopping cart application built with React and TypeScript. It allows users to browse products, search and filter listings, manage their cart, and complete a multi-step checkout flow. It also includes a separate **Buy Now** flow, allowing users to purchase a single selected product without affecting their regular cart.
 
-Everyday is a responsive product browsing and shopping cart frontend. It loads product data from DummyJSON and supports a regular multi-product cart checkout as well as a separate Buy Now checkout for a single selected product. Checkout includes cart review, shipping details, a payment summary, and a client-side order confirmation.
+## Technologies Used
 
-## Technologies used
+- **React 19 + TypeScript** — Component-based user interface and type safety
+- **Vite** — Development server and production builds
+- **React Router** — Page navigation and checkout routes
+- **Bootstrap + Custom CSS** — Responsive layouts and styling
+- **Zustand** — Cart state management and localStorage persistence
+- **TanStack Query** — API fetching, caching, and loading/error states
+- **Zod** — API response and shipping form validation
+- **Vitest** — Unit testing for pricing calculations
 
-- React 19 + TypeScript
-- Vite
-- React Router for URL-based pages and browser history
-- Bootstrap and custom responsive CSS
-- Zustand + persist middleware for cart and Buy Now state persistence in localStorage
-- TanStack Query for product fetching, caching, loading, and error states
-- Zod for product API response validation and shipping form validation
-- Vitest for pricing calculation tests
+## Features
 
-## Setup instructions
+### Product Browsing
+- Responsive product grid displaying images, titles, categories, prices, and ratings
+- Product details page with **Add to Cart**, **Go to Cart**, and **Buy Now** actions
+- Search products by title
+- Filter by category and maximum price, with an option to clear filters
+- Loading skeletons, error handling with retry, and empty-result states
+- Product sorting by price, name, and rating
 
-Requirements:
+### Cart and Pricing
+- Add and remove products and update quantities between 1 and 5
+- Persistent cart state and visible cart item count
+- Automatic subtotal, 5% tax, and a 10% discount when the subtotal exceeds $100
+- Checkout disabled when the subtotal is below $10, with a clear explanation
+- Separate Buy Now checkout that does not mix selected products with the regular cart
+
+### Checkout Flow
+- Multi-step checkout: **Cart Review → Shipping → Payment Summary → Order Confirmation**
+- Shipping form managed with React state and validated using Zod
+- Field-level validation messages for invalid shipping details
+- Read-only payment summary showing shipping information, selected products, and price breakdown
+- Order confirmation after placing an order, with the completed checkout state cleared appropriately
+
+### Additional Features
+- Dark and light themes with the selected preference saved in localStorage
+- URL-based navigation for product details and checkout pages
+- Unit tests covering subtotal, tax, discount, checkout threshold, and empty-cart calculations
+
+## Getting Started
+
+### Prerequisites
 
 - Node.js 20.19+ or 22.12+
 - pnpm
 
-Install pnpm if it is not already available, then install the project dependencies:
+### Installation
 
 ```bash
 npm install --global pnpm
 pnpm install
 ```
 
-## Commands to run the project
-
-Start the development server and open the local URL printed by Vite (normally `http://localhost:5173`):
+### Run the Development Server
 
 ```bash
 pnpm dev
 ```
 
-Run the production build and serve the generated build locally:
+Open the local URL shown in the terminal, usually `http://localhost:5173`.
+
+### Build for Production
 
 ```bash
 pnpm build
 pnpm preview
 ```
 
-Run the pricing tests once:
+### Run Tests
 
 ```bash
 pnpm exec vitest run
 ```
 
-## API used
+## API
 
-The app fetches up to 50 products from the public DummyJSON Products API:
-[`https://dummyjson.com/products?limit=50`](https://dummyjson.com/products?limit=50).
-The response is validated with Zod before product data is used. Product loading requires an internet connection and availability of the external API.
+The application fetches up to 50 products from the [DummyJSON Products API](https://dummyjson.com/products?limit=50). Product responses are validated using Zod before being used by the application.
 
-## Project structure
+An internet connection and API availability are required to load products.
+
+## Project Structure
 
 ```text
 src/
-├── api/products.ts              # Fetch and validate remote product data
+├── api/
+│   └── products.ts
 ├── components/
-│   ├── CheckoutStepper.tsx      # Shared checkout progress indicator
+│   ├── CheckoutStepper.tsx
 │   ├── Header.tsx
 │   ├── OrderSummary.tsx
 │   ├── ProductCard.tsx
 │   └── ShippingForm.tsx
 ├── hooks/
-│   ├── useProductFilters.ts     # Search and filtering logic
-│   └── useProducts.ts           # TanStack Query product request
+│   ├── useProductFilters.ts
+│   └── useProducts.ts
 ├── pages/
 │   ├── ProductsPage.tsx
 │   ├── CartPage.tsx
 │   ├── ShippingPage.tsx
 │   ├── PaymentPage.tsx
 │   └── SuccessPage.tsx
-├── store/cartStore.ts           # Cart state/actions and persistence
-├── types/product.ts             # Zod API schemas and inferred type
-├── utils/pricing.ts             # Centralized price calculations
-├── utils/shippingSchema.ts      # Shipping schema and initial values
-├── App.tsx                      # Routes and checkout guards
-└── main.tsx                     # Providers and router setup
+├── store/
+│   └── cartStore.ts
+├── types/
+│   └── product.ts
+├── utils/
+│   ├── pricing.ts
+│   └── shippingSchema.ts
+├── App.tsx
+└── main.tsx
 ```
 
-## Features completed
+## Known Limitations
 
-- Responsive product grid showing image, title, category, price, rating, and add-to-cart action
-- Product details page with Add to Cart, Go to Cart, and Buy Now actions
-- Product API loading, retryable error, empty API response, successful response, and empty search-result states
-- Search by title, category filter, maximum-price filter, and clear filters
-- Add/remove products, change quantity between 1 and 5, and visible cart item count
-- Zustand persistence keeps cart and Buy Now selections after refresh
-- Separate Buy Now cart review and checkout that does not mix in regular cart products
-- Cart review with per-item totals, subtotal, 5% tax, conditional 10% discount when subtotal is greater than $100, and final total
-- Checkout disabled below a $10 subtotal with a clear explanation
-- URL routes for product browsing/details, regular cart review, Buy Now review, shipping, payment summary, and order confirmation
-- Shipping form managed with React state (no form library), Zod validation, and field-level messages
-- Read-only payment summary showing shipping details, selected products, and the complete price breakdown
-- Placing an order displays a confirmation and clears only the state for the completed checkout
-- Dark/light theme toggle with the preference stored in localStorage
-- Vitest coverage for subtotal, tax, discount, checkout threshold, and empty-cart pricing calculations
+- No custom backend, database, or payment gateway is integrated.
+- Orders are confirmed on the client side and are not saved to a server.
+- Cart and Buy Now state persist in localStorage, but shipping details are held in React state and are lost on page reload.
+- Product data depends on the public DummyJSON API.
 
-## Known limitations
+A production-ready commerce application would require secure backend processing, server-side price and inventory verification, persistent order storage, and payment integration.
 
-- There is no custom backend, database, or payment gateway. The payment summary is read-only and no payment is collected.
-- Order confirmation is client-side only; orders are not saved to a server.
-- Cart and Buy Now selections are stored in this browser's localStorage. Shipping details are held in React state and are lost when the page is reloaded.
-- Product availability and data depend on the public DummyJSON API.
-- A production commerce application would need server-side price and inventory verification, persistent orders, secure customer-data handling, and payment integration.
+## Deployment
 
-## Deployment and submission
+The application can be deployed as a static site using Vercel, Netlify, or Cloudflare Pages.
 
-The app can be deployed as a Vite static site on Vercel, Netlify, or Cloudflare Pages. Configure the build command as `pnpm build` and the output directory as `dist`. Publish the repository and deployment URLs after deploying; this project archive does not itself create a GitHub repository or a public deployment.
+- **Build command:** `pnpm build`
+- **Output directory:** `dist`
+
+Add the GitHub repository and live deployment URLs here once they are available.
