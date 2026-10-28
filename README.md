@@ -1,6 +1,8 @@
 # Everyday — Shopping Cart Application
 
-Everyday is a responsive shopping cart application built with React and TypeScript. It allows users to browse products, search and filter listings, manage their cart, and complete a multi-step checkout flow. It also includes a separate **Buy Now** flow, allowing users to purchase a single selected product without affecting their regular cart.
+## About Everyday
+
+**Everyday** is a **modern, responsive shopping cart application** built with **React and TypeScript**, designed to make online shopping **simple and intuitive**. It features **clean product listings**, easy search and filtering, a **compact cart and order summary**, and a **guided checkout experience** with clear pricing. Additional features include **Buy Now**, **persistent cart state**, **product sorting**, and **dark/light mode**, combining **user-friendly design** with practical frontend development.
 
 ## Technologies Used
 
