@@ -140,7 +140,7 @@ useEffect(() => {
         <div className="container footer-inner">
           <span className="footer-brand">everyday<span className="brand-dot">.</span></span>
           <span>Thoughtfully chosen. Made for real life.</span>
-          <span>Checkout preview · No payment gateway configured</span>
+          <span>Have a good day</span>
         </div>
       </footer>
     </div>
