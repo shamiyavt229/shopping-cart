@@ -1530,15 +1530,19 @@ button:disabled {
 }
 
 
-:root[data-theme="dark"] .product-image-wrap {
+:root[data-theme="dark"] .product-image-wrap,
+:root[data-theme="dark"] .product-details-media,
+:root[data-theme="dark"] .cart-item-image,
+:root[data-theme="dark"] .review-item img {
   background: #f1f4f1;
 }
 
 :root[data-theme="dark"] .hero-art,
-:root[data-theme="dark"] .product-details-media,
-:root[data-theme="dark"] .cart-item-image,
-:root[data-theme="dark"] .review-item img {
-  background: #2a322b;
+
+
+:root[data-theme="dark"] .review-item {
+  background: #cad6ca;
+  color: #171b18;
 }
 
 :root[data-theme="dark"] .product-card {

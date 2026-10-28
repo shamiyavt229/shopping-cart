@@ -25,7 +25,7 @@ export default function ProductCard({ product, quantityInCart, onAdd }: ProductC
         <div className="product-card-bottom">
           <span className="product-price">{money(product.price)}</span>
           <button className="add-button" onClick={() => onAdd(product)} disabled={quantityInCart >= 5}>
-            {quantityInCart >= 5 ? "Max added" : quantityInCart > 0 ? `Add more (${quantityInCart}) +` : "Add to bag +"}
+            {quantityInCart >= 5 ? "Max added" : quantityInCart > 0 ? `Add more (${quantityInCart}) +` : "Add to cart +"}
           </button>
         </div>
       </div>
