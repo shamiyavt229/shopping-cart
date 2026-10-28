@@ -1621,3 +1621,30 @@ button:disabled {
 :root[data-theme="dark"] .theme-toggle {
   color: var(--ink);
 }
+
+.summary-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.summary-product-image {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: var(--card-bg, #fff);
+}
+
+.summary-item-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.summary-item-quantity {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}

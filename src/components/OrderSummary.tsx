@@ -20,6 +20,34 @@ export default function OrderSummary({
     <aside className="summary-card">
       <p className="eyebrow">THE BREAKDOWN</p>
       <h2>Order summary</h2>
+      <div className="summary-items">
+  
+<div className="summary-items">
+  {items.map((item) => (
+    <div className="summary-item" key={item.product.id}>
+      <div className="summary-item-info">
+        <img
+          src={item.product.thumbnail}
+          alt={item.product.title}
+          className="summary-product-image"
+        />
+
+        <div>
+          <p className="summary-item-name">{item.product.title}</p>
+          <p className="summary-item-quantity">
+            {item.quantity} × {money(item.product.price)}
+          </p>
+        </div>
+      </div>
+
+      <strong>
+        {money(item.product.price * item.quantity)}
+      </strong>
+    </div>
+  ))}
+</div>
+
+</div>
       <div className="summary-line"><span>Subtotal</span><span>{money(totals.subtotal)}</span></div>
       <div className="summary-line"><span>Estimated tax (5%)</span><span>{money(totals.tax)}</span></div>
       <div className="summary-line discount-line"><span>Discount</span><span>{totals.discount > 0 ? `−${money(totals.discount)}` : money(0)}</span></div>
@@ -31,7 +59,7 @@ export default function OrderSummary({
           {buttonLabel} <span aria-hidden="true">→</span>
         </button>
       )}
-      <p className="secure-note"><span aria-hidden="true">✓</span> No payment will be collected on this checkout.</p>
+      
     </aside>
   );
 }
